@@ -15,3 +15,26 @@ exports.getAllUsers = async () => {
   const users = await User.find();
   return users;
 };
+
+exports.getUser = async (id) => {
+  const user = await User.findOne({ _id: id });
+  return user;
+};
+
+exports.deleteUser = async (id) => {
+  const user = await User.findOneAndDelete({ _id: id });
+  return user;
+};
+
+exports.updateUser = async (id, userData) => {
+  if (Object.hasOwn(userData, "password")) {
+    const hashPassword = await bcrypt.hash(userData.password, 7);
+    userData.password = hashPassword;
+  }
+  const user = await User.findOneAndUpdate(
+    { _id: id },
+    { ...userData },
+    { new: true }
+  );
+  return user;
+};

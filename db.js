@@ -10,3 +10,11 @@ exports.connectDB = async () => {
     console.log("Unable to connect to MongoDB");
   }
 };
+
+exports.disconnectDB = async () => {
+  try {
+    await mongoose.disconnect();
+  } catch (error) {
+    console.log("Unsuccessfully disconnected");
+  }
+};
