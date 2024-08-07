@@ -1,10 +1,11 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const ApiError = require("../exceptions/api.error");
 
 exports.createUser = async (username, password) => {
   const userInDB = await User.findOne({ username });
   if (userInDB) {
-    throw Error("User already exists");
+    throw ApiError.BadRequest("User already exists");
   }
   const hashPassword = await bcrypt.hash(password, 7);
   const newUser = await User.create({ username, password: hashPassword });
@@ -18,11 +19,17 @@ exports.getAllUsers = async () => {
 
 exports.getUser = async (id) => {
   const user = await User.findOne({ _id: id });
+  if (!user) {
+    throw ApiError.BadRequest("No such user found");
+  }
   return user;
 };
 
 exports.deleteUser = async (id) => {
   const user = await User.findOneAndDelete({ _id: id });
+  if (!user) {
+    throw ApiError.BadRequest("No such user");
+  }
   return user;
 };
 
@@ -36,5 +43,8 @@ exports.updateUser = async (id, userData) => {
     { ...userData },
     { new: true }
   );
+  if (!user) {
+    throw ApiError.BadRequest("No such user");
+  }
   return user;
 };
