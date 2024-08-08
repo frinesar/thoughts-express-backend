@@ -48,3 +48,15 @@ exports.updateUser = async (id, userData) => {
   }
   return user;
 };
+
+exports.loginUser = async (username, password) => {
+  const userInDB = await User.findOne({ username });
+  if (!userInDB) {
+    throw ApiError.BadRequest("No such user");
+  }
+  const isValid = await bcrypt.compare(password, userInDB.password);
+  if (!isValid) {
+    throw ApiError.BadRequest("Invalid password");
+  }
+  return userInDB;
+};

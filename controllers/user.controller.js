@@ -37,21 +37,25 @@ exports.deleteUser = async (req, res, next) => {
   try {
     const user = await UserService.deleteUser(id);
     res.status(200).json({ ...new UserDto(user) });
+  } catch (error) {}
+};
+
+exports.updateUser = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const user = await UserService.updateUser(id, req.body);
+    res.status(200).json({ ...new UserDto(user) });
   } catch (error) {
     next(error);
   }
 };
 
-exports.updateUser = async (req, res, next) => {
-  const { id } = req.params;
+exports.loginUser = async (req, res, next) => {
   const { username, password } = req.body;
-  console.log(req.body);
-
-  res.status(200);
   try {
-    const user = await UserService.updateUser(id, req.body);
+    const user = await UserService.loginUser(username, password);
     res.status(200).json({ ...new UserDto(user) });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
