@@ -9,7 +9,11 @@ module.exports = class ApiError extends Error {
   static BadRequest(message) {
     return new ApiError(400, message);
   }
-  static Unauthorized() {
-    return new ApiError(401, "Unauthorized action");
+  static Unauthorized(message) {
+    return new ApiError(401, message);
+    // return new ApiError(401, "Unauthorized action");
+  }
+  static Forbidden(message) {
+    return new ApiError(403, message);
   }
 };

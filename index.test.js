@@ -17,11 +17,14 @@ describe("Test user creation and retrieving", () => {
   });
 
   let id = "";
+  const username = uuid.v4();
+  const password = uuid.v4();
+  let accessToken = "";
 
   test("Create new user", async () => {
     const response = await request(app)
       .post("/api/users")
-      .send({ username: uuid.v4(), password: uuid.v4() });
+      .send({ username, password });
     expect(response.statusCode).toBe(201);
     expect(response.body).toHaveProperty("id");
     id = await response.body.id;
@@ -33,9 +36,30 @@ describe("Test user creation and retrieving", () => {
     expect(response.body).toHaveProperty("id", id);
   });
 
+  test("Login new user", async () => {
+    const response = await request(app)
+      .post(`/api/users/login`)
+      .send({ username, password });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("accessToken");
+    accessToken = await response.body.accessToken;
+  });
+
   test("Update new user username", async () => {
     const response = await request(app)
       .put(`/api/users/${id}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({ username: "Alex" });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("id", id);
+    expect(response.body).toHaveProperty("username", "Alex");
+  });
+
+  test("Get new access token for new user", async () => {
+    const response = await request(app)
+      .get(`/api/users/${id}`)
+      .set("Authorization", `Bearer ${accessToken}`)
       .send({ username: "Alex" });
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("id", id);
@@ -43,7 +67,9 @@ describe("Test user creation and retrieving", () => {
   });
 
   test("Delete new user", async () => {
-    const response = await request(app).delete(`/api/users/${id}`);
+    const response = await request(app)
+      .delete(`/api/users/${id}`)
+      .set("Authorization", `Bearer ${accessToken}`);
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("id", id);
   });
