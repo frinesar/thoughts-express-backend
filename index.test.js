@@ -3,23 +3,23 @@ const DB = require("./db");
 const app = require("./app");
 const uuid = require("uuid");
 
+let id = "";
+const username = uuid.v4();
+const password = uuid.v4();
+let accessToken = "";
+
 describe("Test the root path", () => {
-  test("It should response the GET method", async () => {
+  test("GET method '/test'", async () => {
     const response = await request(app).get("/test");
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("message", "Working");
   });
 });
 
-describe("Test user creation and retrieving", () => {
+describe("Test user crud and auth", () => {
   beforeAll(() => {
     DB.connectDB();
   });
-
-  let id = "";
-  const username = uuid.v4();
-  const password = uuid.v4();
-  let accessToken = "";
 
   test("Create new user", async () => {
     const response = await request(app)
