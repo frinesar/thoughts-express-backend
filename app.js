@@ -17,7 +17,7 @@ app.use("/test", (req, res) => {
 });
 
 app.use("/api/users", userRouter);
-app.use("/api/reviews", reviewRouter);
+app.use("/api/reviews", tokenValidator, reviewRouter);
 app.use(errorHandler);
 
 module.exports = app;
